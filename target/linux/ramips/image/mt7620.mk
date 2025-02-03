@@ -130,6 +130,16 @@ define Device/bdcom_wap2100-sk
 endef
 TARGET_DEVICES += bdcom_wap2100-sk
 
+define Device/bolt_bl201
+  SOC := mt7620a
+  IMAGE_SIZE := 15872k
+  DEVICE_VENDOR := Bolt
+  DEVICE_MODEL := BL201
+  DEVICE_PACKAGES := kmod-mt76x2 kmod-usb2 kmod-usb-ohci
+  UIMAGE_MAGIC := 0x26112015
+endef
+TARGET_DEVICES += bolt_bl201
+
 define Device/buffalo_whr-1166d
   SOC := mt7620a
   IMAGE_SIZE := 16064k
@@ -482,6 +492,26 @@ define Device/hiwifi_hc5861
   SUPPORTED_DEVICES += hc5861
 endef
 TARGET_DEVICES += hiwifi_hc5861
+
+define Device/hiwifi_r33
+  SOC := mt7620a
+  DEVICE_VENDOR := HiWiFi
+  DEVICE_MODEL := R33
+  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-usb-ledtrig-usbport \
+	kmod-switch-rtl8366-smi kmod-switch-rtl8367b kmod-mt76x2
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  KERNEL_SIZE := 4096k
+  UBINIZE_OPTS := -E 5
+  IMAGE_SIZE := 32768k
+  IMAGES += kernel.bin rootfs.bin factory.bin
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  IMAGE/kernel.bin := append-kernel | check-size $$$$(KERNEL_SIZE)
+  IMAGE/rootfs.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-ubi | \
+	check-size
+endef
+TARGET_DEVICES += hiwifi_r33
 
 define Device/hnet_c108
   SOC := mt7620a
@@ -1123,6 +1153,35 @@ define Device/xiaomi_miwifi-mini
 endef
 TARGET_DEVICES += xiaomi_miwifi-mini
 
+define Device/xiaomi_miwifi-r3
+  SOC := mt7620a
+  BLOCKSIZE := 128k
+  PAGESIZE := 2048
+  KERNEL_SIZE := 4096k
+  IMAGE_SIZE := 32768k
+  UBINIZE_OPTS := -E 5
+  IMAGES += kernel1.bin rootfs0.bin
+  IMAGE/kernel1.bin := append-kernel | check-size $$$$(KERNEL_SIZE)
+  IMAGE/rootfs0.bin := append-ubi | check-size $$$$(IMAGE_SIZE)
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+  DEVICE_VENDOR := Xiaomi
+  DEVICE_MODEL := Mi Router R3
+  DEVICE_PACKAGES := kmod-mt76x2 kmod-usb2 kmod-usb-ohci uboot-envtools
+endef
+TARGET_DEVICES += xiaomi_miwifi-r3
+
+define Device/youku_x2
+  SOC := mt7620a
+  IMAGE_SIZE := 16064k
+  DEVICE_VENDOR := Youku
+  DEVICE_MODEL := X2
+  DEVICE_PACKAGES := kmod-mt76x2 kmod-usb2 kmod-usb-ohci \
+	kmod-sdhci-mt7620 kmod-usb-ledtrig-usbport
+  UIMAGE_MAGIC := 0x12291000
+  UIMAGE_NAME := 400000000000000000001000
+endef
+TARGET_DEVICES += youku_x2
+
 define Device/youku_yk-l1
   SOC := mt7620a
   IMAGE_SIZE := 32448k
@@ -1131,6 +1190,8 @@ define Device/youku_yk-l1
   DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-sdhci-mt7620 \
 	kmod-usb-ledtrig-usbport
   SUPPORTED_DEVICES += youku-yk1 youku,yk1
+  UIMAGE_MAGIC := 0x12291000
+  UIMAGE_NAME := 400000000000000000000000
 endef
 TARGET_DEVICES += youku_yk-l1
 
@@ -1141,6 +1202,8 @@ define Device/youku_yk-l1c
   DEVICE_MODEL := YK-L1c
   DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-sdhci-mt7620 \
 	kmod-usb-ledtrig-usbport
+  UIMAGE_MAGIC := 0x12291000
+  UIMAGE_NAME := 400000000000000000000000
 endef
 TARGET_DEVICES += youku_yk-l1c
 

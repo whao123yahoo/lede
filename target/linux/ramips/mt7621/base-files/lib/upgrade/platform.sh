@@ -9,6 +9,28 @@ RAMFS_COPY_BIN='fw_printenv fw_setenv'
 RAMFS_COPY_DATA='/etc/fw_env.config /var/lock/fw_printenv.lock'
 
 platform_check_image() {
+	local board=$(board_name)
+
+	case "$board" in
+	hatlab,gateboard-one)
+		hatlab_check_image "$1"
+		return $?;
+		;;
+	esac
+
+	return 0
+}
+
+platform_copy_config() {
+	local board=$(board_name)
+
+	case "$board" in
+	hatlab,gateboard-one)
+		hatlab_copy_config
+		return $?;
+		;;
+	esac
+
 	return 0
 }
 
@@ -53,10 +75,16 @@ platform_do_upgrade() {
 	ampedwireless,ally-r1900k|\
 	asus,rt-ac65p|\
 	asus,rt-ac85p|\
+	beeline,smartbox-giga|\
+	beeline,smartbox-turbo-plus|\
+	c-life,xg1|\
 	dlink,dir-1960-a1|\
 	dlink,dir-2640-a1|\
 	dlink,dir-2660-a1|\
 	dlink,dir-853-a3|\
+	h3c,tx1800-plus|\
+	h3c,tx1801-plus|\
+	h3c,tx1806|\
 	hiwifi,hc5962|\
 	jcg,q20|\
 	linksys,e5600|\
@@ -74,14 +102,19 @@ platform_do_upgrade() {
 	netgear,wac104|\
 	netgear,wac124|\
 	netis,wf2881|\
+	raisecom,msg1500-x-00|\
 	sercomm,na502|\
 	xiaomi,mi-router-3g|\
 	xiaomi,mi-router-3-pro|\
 	xiaomi,mi-router-4|\
 	xiaomi,mi-router-ac2100|\
 	xiaomi,mi-router-cr660x|\
-	xiaomi,redmi-router-ac2100)
+	xiaomi,redmi-router-ac2100|\
+ 	zte,e8820s)
 		nand_do_upgrade "$1"
+		;;
+	hatlab,gateboard-one)
+		hatlab_do_upgrade "$1"
 		;;
 	iodata,wn-ax1167gr2|\
 	iodata,wn-ax2033gr|\

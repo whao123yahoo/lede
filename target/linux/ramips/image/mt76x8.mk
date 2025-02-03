@@ -156,6 +156,15 @@ define Device/hak5_wifi-pineapple-mk7
 endef
 TARGET_DEVICES += hak5_wifi-pineapple-mk7
 
+define Device/huasifei_shf283
+  IMAGE_SIZE := 16064k
+  DEVICE_VENDOR := Huasifei
+  DEVICE_MODEL := SHF283
+  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-usb-ledtrig-usbport kmod-usb-net-cdc-mbim \
+		kmod-usb-net-qmi-wwan kmod-usb-net-rndis kmod-usb-serial-option uqmi
+endef
+TARGET_DEVICES += huasifei_shf283
+
 define Device/hilink_hlk-7628n
   IMAGE_SIZE := 32448k
   DEVICE_VENDOR := HILINK
@@ -170,6 +179,14 @@ define Device/hilink_hlk-7688a
   DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-usb-ledtrig-usbport
 endef
 TARGET_DEVICES += hilink_hlk-7688a
+
+define Device/hiwifi_hc5611
+  IMAGE_SIZE := 15808k
+  DEVICE_VENDOR := HiWiFi
+  DEVICE_MODEL := HC5611
+  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci
+endef
+TARGET_DEVICES += hiwifi_hc5611
 
 define Device/hiwifi_hc5661a
   IMAGE_SIZE := 15808k
@@ -316,6 +333,15 @@ define Device/netgear_r6120
   SERCOMM_PAD := 576k
 endef
 TARGET_DEVICES += netgear_r6120
+
+define Device/nradio_wt6285
+  IMAGE_SIZE := 15808k
+  DEVICE_VENDOR := NRadio
+  DEVICE_MODEL := WT6285
+  DEVICE_PACKAGES := kmod-usb-net-cdc-ether kmod-usb-serial-option usb-modeswitch
+  SUPPORTED_DEVICES += wt6285
+endef
+TARGET_DEVICES += nradio_wt6285
 
 define Device/onion_omega2
   IMAGE_SIZE := 16064k

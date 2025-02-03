@@ -6,9 +6,10 @@ BOARDNAME:=Qualcomm Atheros IPQ40XX
 FEATURES:=squashfs fpu ramdisk nand
 CPU_TYPE:=cortex-a7
 CPU_SUBTYPE:=neon-vfpv4
-MAINTAINER:=John Crispin <john@phrozen.org>
+SUBTARGETS:=generic mikrotik
 
-KERNEL_PATCHVER:=5.4
+KERNEL_PATCHVER:=5.10
+KERNEL_TESTING_PATCHVER:=5.10
 
 KERNELNAME:=zImage Image dtbs
 
@@ -18,7 +19,6 @@ DEFAULT_PACKAGES += \
 	kmod-leds-gpio kmod-gpio-button-hotplug swconfig \
 	kmod-ath10k-ct wpad-openssl \
 	kmod-usb3 kmod-usb-dwc3 ath10k-firmware-qca4019-ct \
-	autocore-arm automount autosamba luci-app-adbyby-plus luci-app-ipsec-vpnd luci-app-unblockmusic luci-app-cpufreq luci-app-zerotier \
-	htop ethtool
+	uboot-envtools autocore-arm htop luci-app-cpufreq
 
 $(eval $(call BuildTarget))

@@ -96,7 +96,7 @@ ucidef_set_interfaces_lan_wan() {
 
 ucidef_set_bridge_device() {
 	json_select_object bridge
-	json_add_string name "${1:switch0}"
+	json_add_string name "${1:-switch0}"
 	json_select ..
 }
 
@@ -418,6 +418,15 @@ ucidef_set_led_default() {
 	json_select ..
 }
 
+ucidef_set_led_heartbeat() {
+	_ucidef_set_led_common "$1" "$2" "$3"
+
+	json_add_string trigger heartbeat
+	json_select ..
+
+	json_select ..
+}
+
 ucidef_set_led_gpio() {
 	local gpio="$4"
 	local inverted="$5"
@@ -627,6 +636,21 @@ ucidef_set_ntpserver() {
 			done
 		json_select ..
 	json_select ..
+}
+
+ucidef_add_wlan() {
+	local path="$1"; shift
+
+	ucidef_wlan_idx=${ucidef_wlan_idx:-0}
+
+	json_select_object wlan
+	json_select_object "wl$ucidef_wlan_idx"
+	json_add_string path "$path"
+	json_add_fields "$@"
+	json_select ..
+	json_select ..
+
+	ucidef_wlan_idx="$((ucidef_wlan_idx + 1))"
 }
 
 board_config_update() {

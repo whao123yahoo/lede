@@ -1,6 +1,6 @@
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1006,7 +1006,6 @@ endif()
+@@ -1325,7 +1325,6 @@ endif()
  #
  # OpenSSL/libressl.
  #

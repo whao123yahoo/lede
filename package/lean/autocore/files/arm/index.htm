@@ -9,10 +9,18 @@
 	local util = require "luci.util"
 	local stat = require "luci.tools.status"
 	local ver = require "luci.version"
+	local uci = require("luci.model.uci").cursor()
 
 	local has_ipv6 = fs.access("/usr/sbin/ip6tables")
 	local has_dhcp = fs.access("/etc/config/dhcp")
 	local has_wifi = ((fs.stat("/etc/config/wireless", "size") or 0) > 0)
+	local has_switch = false
+
+	uci:foreach("network", "switch",
+			function(s)
+				has_switch = true
+				return false
+			end)
 
 	local sysinfo = luci.util.ubus("system", "info") or { }
 	local boardinfo = luci.util.ubus("system", "board") or { }
@@ -24,7 +32,7 @@
 		buffered = 0,
 		shared = 0
 	}
-	
+
 	local mem_cached = luci.sys.exec("sed -e '/^Cached: /!d; s#Cached: *##; s# kB##g' /proc/meminfo")
 
 	local swapinfo = sysinfo.swap or {
@@ -48,12 +56,14 @@
 
 		local user_info = luci.sys.exec("cat /proc/net/arp | grep 'br-lan' | grep '0x2' | wc -l")
 
-		local cpu_usage = luci.sys.exec("top -n1 | awk '/^CPU/ { printf(\"%d%%\", 100 - $8) }'") or "6%"
-		local cpu_info = luci.sys.exec("/sbin/cpuinfo") or "ARM Processor x 0 (233MHz, 2.3°C)"
+		local cpu_usage = luci.sys.exec("/sbin/usage") or "6%"
+		local cpu_info = luci.sys.exec("/sbin/cpuinfo") or "?"
+		local eth_info = luci.sys.exec("ethinfo")
 
 		local rv = {
 			cpuinfo    = cpu_info,
 			cpuusage   = cpu_usage,
+			ethinfo    = eth_info,
 			userinfo   = user_info,
 			uptime     = sysinfo.uptime or 0,
 			localtime  = os.date(),
@@ -152,7 +162,7 @@
 			if (ht)  s += ', MCS %s'.format(mcs);
 			if (sgi) s += ', <%:Short GI%>';
 		}
-		
+
 		if (he) {
 			s += ', HE-MCS %d'.format(mcs);
 			if (nss) s += ', HE-NSS %d'.format(nss);
@@ -255,7 +265,7 @@
 					'<strong><%:Type%>: </strong>%s%s<br />',
 						ifc6.proto, (ifc6.ip6prefix) ? '-pd' : ''
 				);
-				
+
 				if (!ifc6.ip6prefix)
 				{
 					s += String.format(
@@ -643,15 +653,29 @@
 
 			var e;
 
+			if (e = document.getElementById('ethinfo'))			{
+				var ports = eval('(' + info.ethinfo + ')');
+				var tmp = "";
+				for (var i in ports)
+				{
+					tmp = tmp + String.format(
+							'<td style="text-align:center"><span style="line-height:25px">%s</span><br /><small><img src="<%=resource%>/icons/%s" /><br />%s<br />%s</small></td>',							ports[i].name,
+							ports[i].status ? 'port_up.png' : 'port_down.png',
+							ports[i].speed,
+							ports[i].duplex ? '<%:full-duplex%>' : '<%:half-duplex%>');
+				};
+				e.innerHTML = "<tr>" + tmp + "</tr>";
+			}
+
 			if (e = document.getElementById('localtime'))
 				e.innerHTML = info.localtime;
 
 			if (e = document.getElementById('uptime'))
 				e.innerHTML = String.format('%t', info.uptime);
-				
+
 			if (e = document.getElementById('userinfo'))
 				e.innerHTML = info.userinfo;
-				
+
 			if (e = document.getElementById('cpuusage'))
 				e.innerHTML = info.cpuusage;
 
@@ -710,11 +734,11 @@
 			<%=pcdata(ver.distname)%> <%=pcdata(ver.distversion)%> /
 			<%=pcdata(ver.luciname)%> (<%=pcdata(ver.luciversion)%>)
 		</td></tr>
-		<tr><td width="33%"><%:Kernel Version%></td><td><%=unameinfo.release or "?"%></td></tr>
+		<tr><td width="33%"><%:Kernel Version%></td><td><%=luci.sys.exec("uname -r | awk -F '-' '{print $1}'") or "?"%></td></tr>
 		<tr><td width="33%"><%:Local Time%></td><td id="localtime">-</td></tr>
 		<tr><td width="33%"><%:Uptime%></td><td id="uptime">-</td></tr>
 		<tr><td width="33%"><%:Load Average%></td><td id="loadavg">-</td></tr>
-		<tr><td width="33%"><%:CPU usage (%)%></td><td id="cpuusage">-</td></tr>
+		<tr><td width="33%"><%:CPU usage%></td><td id="cpuusage">-</td></tr>
 	</table>
 </fieldset>
 
@@ -734,6 +758,15 @@
 	<table width="100%" cellspacing="10">
 		<tr><td width="33%"><%:Total Available%></td><td id="swaptotal">-</td></tr>
 		<tr><td width="33%"><%:Free%></td><td id="swapfree">-</td></tr>
+	</table>
+</fieldset>
+<% end %>
+
+<% if not has_switch then %>
+<fieldset class="cbi-section">
+	<legend><%:Interfaces%></legend>
+
+	<table width="100%" cellspacing="10" id="ethinfo">
 	</table>
 </fieldset>
 <% end %>
